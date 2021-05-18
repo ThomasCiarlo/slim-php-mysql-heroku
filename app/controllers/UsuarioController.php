@@ -1,6 +1,10 @@
 <?php
+
+use Slim\Psr7\Response;
+
 require_once './models/Usuario.php';
 require_once './interfaces/IApiUsable.php';
+require_once './middlewares/AutentificadorJWT.php';
 
 class UsuarioController extends Usuario implements IApiUsable
 {
@@ -77,5 +81,31 @@ class UsuarioController extends Usuario implements IApiUsable
         $response->getBody()->write($payload);
         return $response
           ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function TraerUserLogin($request, $response, $args)
+    {
+      $token = "";
+      $parametros = $request->getParsedBody();
+
+      $usuario = $parametros['usuario'];
+      $clave = $parametros['clave'];
+
+      $usr = Usuario::obtenerUserLogin($usuario,$clave);
+
+      if($usr != null)
+      {
+        $token = AutentificadorJWT::CrearToken($usr);
+        $payload = json_encode(array("mensaje" => "Usuario logiado con exito"));
+      }
+      else
+      {
+        $payload = json_encode(array("mensaje" => "Usuario no encontrado"));
+      }
+
+      $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json')
+          ->withHeader('Authorization', 'Bearer ' . $token);
     }
 }

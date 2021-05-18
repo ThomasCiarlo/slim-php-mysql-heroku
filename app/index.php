@@ -10,7 +10,7 @@ use Slim\Routing\RouteCollectorProxy;
 use Slim\Routing\RouteContext;
 
 require __DIR__ . '/../vendor/autoload.php';
-
+require_once './middlewares/MWparaAutentificar.php';
 require_once './db/AccesoDatos.php';
 
 require_once './controllers/UsuarioController.php';
@@ -22,16 +22,19 @@ require_once './controllers/PedidoController.php';
 // Instantiate App
 $app = AppFactory::create();
 //para debug
-//$app->setBasePath('/slim-php-mysql-heroku/app');
+$app->setBasePath('/slim-php-mysql-heroku/app');
 // Add error middleware
 $app->addErrorMiddleware(true, true, true);
 
 
+$app->group('/login', function (RouteCollectorProxy $group) {
+  $group->post('[/]', \UsuarioController::class . ':TraerUserLogin');
+});
 
-$app->group('/usuarios', function (RouteCollectorProxy $group) {
+$app->group('/usuarios', function (RouteCollectorProxy $group){  
     $group->get('[/]', \UsuarioController::class . ':TraerTodos');
     $group->get('/{usuario}', \UsuarioController::class . ':TraerUno');
-    $group->post('[/]', \UsuarioController::class . ':CargarUno');
+    $group->post('[/]',\UsuarioController::class . ':CargarUno')->add(\MWparaAutentificar::class . ':VerificarUsuario');
   });
 
 $app->group('/productos', function (RouteCollectorProxy $group) {
