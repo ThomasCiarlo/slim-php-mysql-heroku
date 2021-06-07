@@ -6,15 +6,16 @@ class Usuario
     public $usuario;
     public $clave;
     public $puesto;
+    public $estado;
 
     public function crearUsuario()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO usuarios (usuario, clave,puesto) VALUES (:usuario, :clave,:puesto)");
-        $claveHash = password_hash($this->clave, PASSWORD_DEFAULT);
+        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO usuarios (usuario, clave,puesto,estado) VALUES (:usuario, :clave,:puesto,:estado)");
         $consulta->bindValue(':usuario', $this->usuario, PDO::PARAM_STR);
-        $consulta->bindValue(':clave', $claveHash);
+        $consulta->bindValue(':clave', $this->clave);
         $consulta->bindValue(':puesto', $this->puesto);
+        $consulta->bindValue(':estado', $this->estado);
         $consulta->execute();
 
         return $objAccesoDatos->obtenerUltimoId();

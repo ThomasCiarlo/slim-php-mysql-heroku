@@ -18,15 +18,27 @@ class MWparaAutentificar
 		  else
 		  {
 			
-			$response = new Response();
-		    $ArrayDeParametros = $request->getParsedBody();
-		    $token=$ArrayDeParametros['token'];
+			$response = new ResponseMW();
+
+			$arrayConToken = $request->getHeader('Authorization');
+		    $token=$arrayConToken[0];
+
+			$token = str_replace ("Bearer " , "" , $token);
+
+
 		    try
 			{
 				AutentificadorJWT::VerificarToken($token);
 				$todoOk = true;
 			}
 			catch(Exception){
+
+				if($token == "")
+				{
+					$response->getBody()->write(json_encode(array("mensaje" => "Primero debe iniciar sesion")));
+					return $response;
+				}
+				$response->getBody()->write(json_encode(array("mensaje" => "Token incorrecto")));
 				$todoOk = false;
 			}
 			
@@ -35,7 +47,7 @@ class MWparaAutentificar
 				if($payload->puesto=="Administrador")
 				{   
 					$response = $handler->handle($request);
-					$response->getBody()->write("<p>Bienvenido $payload->usuario </p>");			  
+					$response->getBody()->write(json_encode(array("mensaje" => "Bienvenido $payload->usuario ")));			  
 					
 				}
 				else
@@ -46,7 +58,6 @@ class MWparaAutentificar
 				}
 			}  
 		  }
-		  $response->getBody()->write('<p>vuelvo del verificador de credenciales</p>');
 		  return $response;   
 	
 	}

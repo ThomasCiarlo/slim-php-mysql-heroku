@@ -80,4 +80,21 @@ class ProductoController extends Producto implements IApiProducto
         return $response
           ->withHeader('Content-Type', 'application/json');
     }
+
+    public function DescargarProductos($request, $response, $args)
+    {
+      $lista = Producto::obtenerTodos();
+      $rutaArchivo = "./DescargaDeArchivos/Productos.csv";
+
+      foreach($lista as $prod){
+        $str = $prod->id .",". $prod->descripcion .",". $prod->tipo .",". $prod->importe;
+        Archivos::EscribirArchivos($rutaArchivo,$str);
+      }
+      
+      $payload = json_encode(array("mensaje" => "Se guardo correctamente"));           
+
+      $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
 }

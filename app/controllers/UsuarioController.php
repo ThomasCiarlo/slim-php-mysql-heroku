@@ -5,6 +5,8 @@ use Slim\Psr7\Response;
 require_once './models/Usuario.php';
 require_once './interfaces/IApiUsable.php';
 require_once './middlewares/AutentificadorJWT.php';
+require_once './models/Produccion.php';
+require_once './Funciones/Archivos.php';
 
 class UsuarioController extends Usuario implements IApiUsable
 {
@@ -15,12 +17,14 @@ class UsuarioController extends Usuario implements IApiUsable
         $usuario = $parametros['usuario'];
         $clave = $parametros['clave'];
         $puesto = $parametros['puesto'];
+        $estado = $parametros['estado'];
 
         // Creamos el usuario
         $usr = new Usuario();
         $usr->usuario = $usuario;
         $usr->clave = $clave;
         $usr->puesto = $puesto;
+        $usr->estado = $estado;
         $usr->crearUsuario();
 
         $payload = json_encode(array("mensaje" => "Usuario creado con exito"));
@@ -83,6 +87,40 @@ class UsuarioController extends Usuario implements IApiUsable
           ->withHeader('Content-Type', 'application/json');
     }
 
+    public function VerTarea($request, $response, $args)
+    {     
+      $id = $args['id'];
+      var_dump($id);
+      $produccion = Produccion::BuscarPedidoPorUser($id);
+
+      $payload = json_encode(array("Tarea:" => $produccion));
+
+      $response->getBody()->write($payload);
+      return $response
+      ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function TerminarTarea($request, $response, $args)
+    {
+      $parametros = $request->getParsedBody();
+      $idUser = $parametros['id'];
+      
+      $produccion = Produccion::BuscarPedidoPorUser($idUser);
+
+
+      if($produccion != null){
+      Produccion::ActualizarEstado($produccion->id);
+      $array = (array("mensaje" => "Se termino con la tarea","ID" => "$produccion->id"));
+      }
+      else{
+        $array = (array("mensaje" => "No habia tareas pendientes"));
+      }     
+      $payload = json_encode($array);
+      $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
     public function TraerUserLogin($request, $response, $args)
     {
       $token = "";
@@ -96,16 +134,34 @@ class UsuarioController extends Usuario implements IApiUsable
       if($usr != null)
       {
         $token = AutentificadorJWT::CrearToken($usr);
-        $payload = json_encode(array("mensaje" => "Usuario logiado con exito"));
+        $array = (array("mensaje" => "Usuario logiado con exito","token" => "$token"));
+        $payload = json_encode($array);
       }
       else
       {
-        $payload = json_encode(array("mensaje" => "Usuario no encontrado"));
+        $payload = json_encode(array("mensaje" => "Usuario no encontrado"));       
       }
 
       $response->getBody()->write($payload);
         return $response
           ->withHeader('Content-Type', 'application/json')
           ->withHeader('Authorization', 'Bearer ' . $token);
+    }
+
+    public function DescargarUsuarios($request, $response, $args)
+    {
+      $lista = Usuario::obtenerTodos();
+      $rutaArchivo = "./DescargaDeArchivos/Usuarios.csv";
+
+      foreach($lista as $user){
+        $str = $user->id .",". $user->usuario .",". $user->clave .",". $user->puesto;
+        Archivos::EscribirArchivos($rutaArchivo,$str);
+      }
+      
+      $payload = json_encode(array("mensaje" => "Se guardo correctamente"));           
+
+      $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
     }
 }

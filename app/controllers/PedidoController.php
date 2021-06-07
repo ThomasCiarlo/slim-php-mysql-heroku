@@ -22,17 +22,19 @@ class PedidoController extends Pedido implements IApiPedido
 
         $pedidosListado = explode ( ";" , $ArrayPedidos ,$limit = PHP_INT_MAX);
         $importe = 0;
+        $idProductos = "";
         foreach($pedidosListado as $x)
         {
            $prod = Producto::obtenerProducto($x);
            if($prod != null){
+             $idProductos .= $prod->id.";";
              $importe = $prod->importe + $importe;
            }
         }
-              
+                            
         $Pedido = new Pedido();
         $Pedido->mesa = $mesa->numeroMesa;
-        $Pedido->listaPedido = $ArrayPedidos;
+        $Pedido->listaPedido = $idProductos;
         $Pedido->usuario = $usuario;
         $Pedido->estado = $estado;
         $Pedido->codPedido = $codPedido;

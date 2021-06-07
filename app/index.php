@@ -17,6 +17,7 @@ require_once './controllers/UsuarioController.php';
 require_once './controllers/ProductoController.php';
 require_once './controllers/MesaController.php';
 require_once './controllers/PedidoController.php';
+require_once './controllers/ProduccionController.php';
 
 
 // Instantiate App
@@ -34,25 +35,40 @@ $app->group('/login', function (RouteCollectorProxy $group) {
 $app->group('/usuarios', function (RouteCollectorProxy $group){  
     $group->get('[/]', \UsuarioController::class . ':TraerTodos');
     $group->get('/{usuario}', \UsuarioController::class . ':TraerUno');
-    $group->post('[/]',\UsuarioController::class . ':CargarUno')->add(\MWparaAutentificar::class . ':VerificarUsuario');
+    $group->post('[/]',\UsuarioController::class . ':CargarUno');//->add(\MWparaAutentificar::class . ':VerificarUsuario');
+  });
+
+$app->group('/usuarios/tareas', function (RouteCollectorProxy $group){  
+    $group->get('/{id}', \UsuarioController::class . ':VerTarea');
+    $group->post('[/]', \UsuarioController::class . ':TerminarTarea');
+  });
+
+$app->group('/descargaArchivos', function (RouteCollectorProxy $group){  
+    $group->get('[/]', \UsuarioController::class . ':DescargarUsuarios');
+    $group->post('[/]', \ProductoController::class . ':DescargarProductos');
+    $group->put('[/]', \ReporteProduccion::class . ':GenerarPdf');
   });
 
 $app->group('/productos', function (RouteCollectorProxy $group) {
     $group->get('[/]', \ProductoController::class . ':TraerTodos');
     $group->get('/{descripcion}', \ProductoController::class . ':TraerUno');
     $group->post('[/]', \ProductoController::class . ':CargarUno');
-  });
+  })->add(\MWparaAutentificar::class . ':VerificarUsuario');
 
 $app->group('/mesas', function (RouteCollectorProxy $group) {
     $group->get('[/]', \MesaController::class . ':TraerTodos');
     $group->get('/{numeroMesa}', \MesaController::class . ':TraerUno');
-    $group->post('[/]', \MesaController::class . ':CargarUno');
+    $group->post('[/]', \MesaController::class . ':CargarUno')->add(\MWparaAutentificar::class . ':VerificarUsuario');
   });
 
 $app->group('/pedidos', function (RouteCollectorProxy $group) {
     $group->get('[/]', \PedidoController::class . ':TraerTodos');
     $group->get('/{codPedido}', \PedidoController::class . ':TraerUno');
-    $group->post('[/]', \PedidoController::class . ':CargarUno');
+    $group->post('[/]', \PedidoController::class . ':CargarUno');//->add(\MWparaAutentificar::class . ':VerificarUsuario');
+  });
+
+  $app->group('/produccion', function (RouteCollectorProxy $group) {
+    $group->get('[/]', \ProduccionController::class . ':CargarUno');
   });
   
 
