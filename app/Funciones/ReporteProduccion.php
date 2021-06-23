@@ -1,5 +1,6 @@
 <?php
-include "./app/models/Produccion.php";
+
+require "PDF.php";
 
 class ReporteProduccion
 {

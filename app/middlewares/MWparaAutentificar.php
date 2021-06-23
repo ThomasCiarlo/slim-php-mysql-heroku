@@ -44,10 +44,9 @@ class MWparaAutentificar
 			
 			if($todoOk){
 				$payload=AutentificadorJWT::ObtenerData($token);
-				if($payload->puesto=="Administrador")
+				if($payload->puesto=="ADMINISTRADOR")
 				{   
-					$response = $handler->handle($request);
-					$response->getBody()->write(json_encode(array("mensaje" => "Bienvenido $payload->usuario ")));			  
+					$response = $handler->handle($request);			  
 					
 				}
 				else

@@ -8,21 +8,20 @@ class Produccion
     public $producto;
     public $idPedido;
     public $estado;
+    public $tiempoEstimado;
     public $fechaDeProduccion;
-
+    
     public static function AsignarPedido()
     {
         $NohayMas = true;
-        $pedido = Pedido::obtenerPedidoPorEstado("0");
-
-    if($pedido != null){
+        $pedido = Pedido::obtenerPedidoPorEstado("1");
+        if($pedido != null){
 
         $listaDeProductos = explode ( ";" , $pedido->listaPedido ,$limit = PHP_INT_MAX);
 
         foreach($listaDeProductos as $x)
         {
             $prod = Produccion::BuscarEnProduccion($x,$pedido->id);
-            
             if($prod == null){
                 $producto = Producto::obtenerProductoID($x);
                 $user = null;
@@ -30,38 +29,38 @@ class Produccion
                 switch($tip)
                 {
                     case "COMIDA":
-                        $user = Produccion::BuscarEmpleadoSinAsignacion("COCINERO");                        
+                        $user = Produccion::BuscarEmpleadoSinAsignacion("1");                      
                         break;
                     case "BEBIDA":
-                        $user = Produccion::BuscarEmpleadoSinAsignacion("BARTENDER");                        
-                        var_dump($user);
+                        $user = Produccion::BuscarEmpleadoSinAsignacion("2");                        
                         break;
                     case "CERVEZA":
-                        $user = Produccion::BuscarEmpleadoSinAsignacion("CERVEZERO");
+                        $user = Produccion::BuscarEmpleadoSinAsignacion("3");
                         break;
                     default:
                         return;
                     break;
                 }
                 
-                Produccion::InsertarEnProduccion($user->id,$user->usuario,$x,$pedido->id,"0");                  
+                Produccion::InsertarEnProduccion($user->id,$user->usuario,$x,$pedido->id,"2");
+                Pedido::ActualizarEstado($pedido->id,2);                 
                 $NohayMas = false;                      
             }
 
             if($NohayMas){
                 Pedido::ActualizarEstado($pedido->id,"1");
             }
-        }
+          }
         }
 
         $pedidosAEntregar = Pedido::obtenerPedidoPorEstado("1");
 
         if($pedidosAEntregar != null){
             $userMozo = Produccion::BuscarEmpleadoSinAsignacion("MOZO");
-            if($userMozo != null){
-                
-                Produccion::InsertarEnProduccion($userMozo->id,$userMozo->usuario,0,$pedidosAEntregar->id,"1");
+            if($userMozo != null){               
+                Produccion::InsertarEnProduccion($userMozo->id,$userMozo->usuario,0,$pedidosAEntregar->id,"3");
                 Pedido::ActualizarEstado($pedidosAEntregar->id,"2");
+                Mesa::modificarEstado($pedidosAEntregar->mesa,3);
             }
         }
 
@@ -112,21 +111,32 @@ class Produccion
         return $consulta->fetchObject('Produccion');
     }
 
+    public static function BuscarEnProduccionID($idPedido)
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id,Idempleado, empleadoNombre,producto,idPedido,estado,fechaDeProduccion FROM produccion WHERE idPedido = :idPedido");
+        $consulta->bindValue(':idPedido', $idPedido);
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_CLASS, 'Produccion');
+    }
+   
     public static function BuscarPedidoPorUser($id)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT id,Idempleado, empleadoNombre,producto,idPedido,estado,fechaDeProduccion FROM produccion WHERE  estado = '0' and Idempleado = :id");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id,Idempleado, empleadoNombre,producto,idPedido,estado,fechaDeProduccion FROM produccion WHERE  estado = '1' and Idempleado = :id");
         $consulta->bindValue(':id', $id);
         $consulta->execute();
 
         return $consulta->fetchObject('Produccion');
     }
 
-    public static function ActualizarEstado($id)
+    public static function ActualizarEstado($id,$tiempo)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("UPDATE produccion set estado = '1' where id = :id");
+        $consulta = $objAccesoDatos->prepararConsulta("UPDATE produccion set estado = '2',tiempoEstimado = :tiempo where id = :id");
         $consulta->bindValue(':id', $id);
+        $consulta->bindValue(':tiempo', $tiempo);
         $consulta->execute();
     }
 

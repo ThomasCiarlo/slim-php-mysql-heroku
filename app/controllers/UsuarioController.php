@@ -104,12 +104,13 @@ class UsuarioController extends Usuario implements IApiUsable
     {
       $parametros = $request->getParsedBody();
       $idUser = $parametros['id'];
+      $timpoRealizado = $parametros['tiempoTardado'];
       
       $produccion = Produccion::BuscarPedidoPorUser($idUser);
 
 
       if($produccion != null){
-      Produccion::ActualizarEstado($produccion->id);
+      Produccion::ActualizarEstado($produccion->id,$timpoRealizado);
       $array = (array("mensaje" => "Se termino con la tarea","ID" => "$produccion->id"));
       }
       else{
@@ -144,8 +145,41 @@ class UsuarioController extends Usuario implements IApiUsable
 
       $response->getBody()->write($payload);
         return $response
-          ->withHeader('Content-Type', 'application/json')
-          ->withHeader('Authorization', 'Bearer ' . $token);
+          ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function cerrarMesa($request, $response, $args)
+    {
+      $parametros = $request->getParsedBody();
+
+      $mesa = $parametros['mesa'];
+      $pedido = $parametros['pedido'];
+
+      Mesa::modificarEstado($mesa,4);
+      Pedido::ActualizarEstado($pedido,3);
+
+      $payload = json_encode(array("mensaje" => "Se cerro la mesa correctamente"));           
+
+      $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function estadoPedido($request, $response, $args)
+    {
+
+      $parametros = $request->getParsedBody();
+
+      $idPedido = $parametros['idPedido'];
+
+      $ped =Pedido::obtenerPedido($idPedido);
+      $prod = Produccion::BuscarEnProduccionID($ped->id);
+
+      $payload = json_encode(array("Pedido" => $ped,"Productos" => $prod));
+
+      $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
     }
 
     public function DescargarUsuarios($request, $response, $args)

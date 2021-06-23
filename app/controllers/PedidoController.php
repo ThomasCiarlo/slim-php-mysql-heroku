@@ -8,17 +8,16 @@ class PedidoController extends Pedido implements IApiPedido
     {
         $parametros = $request->getParsedBody();
         
-        $mesa = new Mesa();
-        $mesa->numeroMesa = random_int(10000,99999);
-        $mesa->estado = "Con cliente esperando pedido";
-        $mesa->sector =  $parametros['sector'];
-        $mesa->CrearMesa();
+        $mesa = Mesa::obtenerMesaEstado(4);
+
+        if($mesa != null){
 
         $ArrayPedidos = $parametros['ArrayPedidos'];
         $usuario = "";
         $estado = "Pedido Sin Usuario";
         $codPedido = random_int(10000,99999);
         $horaDeInicio = date("H:i:s");
+        $nombreCliente = $parametros['nombreCliente'];
 
         $pedidosListado = explode ( ";" , $ArrayPedidos ,$limit = PHP_INT_MAX);
         $importe = 0;
@@ -33,18 +32,24 @@ class PedidoController extends Pedido implements IApiPedido
         }
                             
         $Pedido = new Pedido();
-        $Pedido->mesa = $mesa->numeroMesa;
+        $Pedido->mesa = $mesa->id;
         $Pedido->listaPedido = $idProductos;
         $Pedido->usuario = $usuario;
         $Pedido->estado = $estado;
         $Pedido->codPedido = $codPedido;
         $Pedido->horaDeInicio = $horaDeInicio;
         $Pedido->importe = $importe;
+        $Pedido->nombreCliente = $nombreCliente;
 
         $Pedido->CrearPedido();
+        Mesa::modificarEstado($Pedido->mesa,1);
 
-        $payload = json_encode(array("mensaje" => "Pedido creado con exito"));
-
+        $payload = json_encode(array("mensaje" => "Pedido creado con exito","CodPedido" => "$codPedido"));
+      }
+      else
+      {
+        $payload = json_encode(array("mensaje" => "No hay mesa disponible"));
+      }
         $response->getBody()->write($payload);
         return $response
           ->withHeader('Content-Type', 'application/json');
