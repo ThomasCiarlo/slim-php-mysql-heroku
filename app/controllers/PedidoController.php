@@ -14,7 +14,7 @@ class PedidoController extends Pedido implements IApiPedido
 
         $ArrayPedidos = $parametros['ArrayPedidos'];
         $usuario = "";
-        $estado = "Pedido Sin Usuario";
+        $estado = "1";
         $codPedido = random_int(10000,99999);
         $horaDeInicio = date("H:i:s");
         $nombreCliente = $parametros['nombreCliente'];

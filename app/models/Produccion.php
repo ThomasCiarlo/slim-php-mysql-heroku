@@ -46,21 +46,16 @@ class Produccion
                 Pedido::ActualizarEstado($pedido->id,2);                 
                 $NohayMas = false;                      
             }
-
-            if($NohayMas){
-                Pedido::ActualizarEstado($pedido->id,"1");
-            }
           }
         }
 
-        $pedidosAEntregar = Pedido::obtenerPedidoPorEstado("1");
-
+        $pedidosAEntregar = Pedido::obtenerPedidoPorEstado("2");
         if($pedidosAEntregar != null){
-            $userMozo = Produccion::BuscarEmpleadoSinAsignacion("MOZO");
+            $userMozo = Produccion::BuscarEmpleadoSinAsignacion("4");
             if($userMozo != null){               
                 Produccion::InsertarEnProduccion($userMozo->id,$userMozo->usuario,0,$pedidosAEntregar->id,"3");
-                Pedido::ActualizarEstado($pedidosAEntregar->id,"2");
-                Mesa::modificarEstado($pedidosAEntregar->mesa,3);
+                Pedido::ActualizarEstado($pedidosAEntregar->id,"3");
+                Mesa::modificarEstado($pedidosAEntregar->mesa,"2");
             }
         }
 
@@ -124,17 +119,18 @@ class Produccion
     public static function BuscarPedidoPorUser($id)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT id,Idempleado, empleadoNombre,producto,idPedido,estado,fechaDeProduccion FROM produccion WHERE  estado = '1' and Idempleado = :id");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id,Idempleado, empleadoNombre,producto,idPedido,estado,fechaDeProduccion FROM produccion WHERE estado = '2' and Idempleado = :id");
         $consulta->bindValue(':id', $id);
         $consulta->execute();
 
         return $consulta->fetchObject('Produccion');
     }
 
-    public static function ActualizarEstado($id,$tiempo)
+    public static function ActualizarEstado($id,$tiempo,$estado)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("UPDATE produccion set estado = '2',tiempoEstimado = :tiempo where id = :id");
+        $consulta = $objAccesoDatos->prepararConsulta("UPDATE produccion set estado = :estado ,tiempoEstimado = :tiempo where id = :id");
+        $consulta->bindValue(':estado', $estado);
         $consulta->bindValue(':id', $id);
         $consulta->bindValue(':tiempo', $tiempo);
         $consulta->execute();

@@ -90,7 +90,6 @@ class UsuarioController extends Usuario implements IApiUsable
     public function VerTarea($request, $response, $args)
     {     
       $id = $args['id'];
-      var_dump($id);
       $produccion = Produccion::BuscarPedidoPorUser($id);
 
       $payload = json_encode(array("Tarea:" => $produccion));
@@ -110,7 +109,7 @@ class UsuarioController extends Usuario implements IApiUsable
 
 
       if($produccion != null){
-      Produccion::ActualizarEstado($produccion->id,$timpoRealizado);
+      Produccion::ActualizarEstado($produccion->id,$timpoRealizado,3);
       $array = (array("mensaje" => "Se termino con la tarea","ID" => "$produccion->id"));
       }
       else{
@@ -156,7 +155,7 @@ class UsuarioController extends Usuario implements IApiUsable
       $pedido = $parametros['pedido'];
 
       Mesa::modificarEstado($mesa,4);
-      Pedido::ActualizarEstado($pedido,3);
+      Pedido::ActualizarEstado($pedido,4);
 
       $payload = json_encode(array("mensaje" => "Se cerro la mesa correctamente"));           
 

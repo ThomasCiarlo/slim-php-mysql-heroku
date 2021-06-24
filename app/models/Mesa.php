@@ -48,21 +48,20 @@ class Mesa
         return $consulta->fetchObject('Mesa');
     }
 
-    public static function modificarMesa($numeroMesa,$sector,$estado)
+    public static function modificarMesa($id,$estado)
     {
         $objAccesoDato = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDato->prepararConsulta("UPDATE mesas SET numeroMesa = :numeroMesa, sector = :sector,estado = :estado WHERE numeroMesa = :numeroMesa");
-        $consulta->bindValue(':numeroMesa', $numeroMesa, PDO::PARAM_STR);
-        $consulta->bindValue(':sector', $sector, PDO::PARAM_STR);
-        $consulta->bindValue(':estado', $sector, PDO::PARAM_STR);
+        $consulta = $objAccesoDato->prepararConsulta("UPDATE mesas SET estado = :estado WHERE id = :id");     
+        $consulta->bindValue(':estado', $estado, PDO::PARAM_STR);
+        $consulta->bindValue(':id', $id, PDO::PARAM_STR);
         $consulta->execute();
     }
 
-    public static function modificarEstado($numeroMesa,$estado)
+    public static function modificarEstado($id,$estado)
     {
         $objAccesoDato = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDato->prepararConsulta("UPDATE mesas SET estado = :estado WHERE numeroMesa = :numeroMesa");
-        $consulta->bindValue(':numeroMesa', $numeroMesa, PDO::PARAM_STR);
+        $consulta = $objAccesoDato->prepararConsulta("UPDATE mesas SET estado = :estado WHERE id = :id");
+        $consulta->bindValue(':id', $id, PDO::PARAM_STR);
         $consulta->bindValue(':estado', $estado, PDO::PARAM_STR);
         $consulta->execute();
     }
