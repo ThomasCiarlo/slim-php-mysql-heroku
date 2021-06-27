@@ -76,6 +76,24 @@ class Archivos
 
     }
 
+    public static function RecibirYLeerArchivo($rutaArchivo,$str)
+    {
+          $todoOk = false;
+          $file = fopen($rutaArchivo,'a');
+          try{              
+          fwrite($file, $str . "\n");
+          $todoOk = true;
+          }
+          catch(Exception $e)
+          {
+              fclose($file);
+          }
+  
+          fclose($file);
+          return $todoOk;   
+
+    }
+
 }
 
 ?>

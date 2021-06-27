@@ -12,11 +12,12 @@ class Pedido
     public $tiempoFinalizacion;
     public $importe;
     public $nombreCliente;
+    public $fechaPedido;
 
     public function CrearPedido()
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO pedidos (mesa, listaPedido,usuario,estado,codPedido,horaDeInicio, importe,nombreCliente) VALUES (:mesa, :listaPedido, :usuario, :estado, :codPedido, :horaDeInicio, :importe,:nombreCliente)");
+        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO pedidos (mesa, listaPedido,usuario,estado,codPedido,horaDeInicio, importe,nombreCliente,fechaPedido) VALUES (:mesa, :listaPedido, :usuario, :estado, :codPedido, :horaDeInicio, :importe,:nombreCliente,:fechaPedido)");
         $consulta->bindValue(':mesa', $this->mesa, PDO::PARAM_STR);
         $consulta->bindValue(':listaPedido', $this->listaPedido,PDO::PARAM_STR);
         $consulta->bindValue(':usuario', $this->usuario,PDO::PARAM_STR);
@@ -25,6 +26,7 @@ class Pedido
         $consulta->bindValue(':horaDeInicio', $this->horaDeInicio, PDO::PARAM_STR);
         $consulta->bindValue(':importe', $this->importe,PDO::PARAM_INT);
         $consulta->bindValue(':nombreCliente', $this->nombreCliente, PDO::PARAM_STR);
+        $consulta->bindValue(':fechaPedido', date("Y-m-d"), PDO::PARAM_STR);
         $consulta->execute();
 
         return $objAccesoDatos->obtenerUltimoId();

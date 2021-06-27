@@ -197,4 +197,62 @@ class UsuarioController extends Usuario implements IApiUsable
         return $response
           ->withHeader('Content-Type', 'application/json');
     }
+
+    
+    public function CargaUsuarios($request, $response, $args)
+    {
+      $archivo = "./DescargaDeArchivos/".basename($_FILES["archivo"]["name"]);
+      $file = fopen($archivo,'r');
+     
+      while ($data = fgetcsv ($file, 1000, ";")) {
+        $num = count ($data);
+        print "";
+
+        $usr = new Usuario();
+        $usr->usuario = $data[0];
+        $usr->clave = $data[1];
+        $usr->puesto = $data[2];
+        $usr->estado = $data[3];
+        $usr->crearUsuario();
+
+      }
+      
+      $payload = json_encode(array("mensaje" => "Se guardo correctamente"));           
+
+      $response->getBody()->write($payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function Encuesta($request, $response, $args)
+    {
+      $parametros = $request->getParsedBody();
+      $NotaRestaurante = $parametros['NotaRestaurante'];
+      $NotaMozo = $parametros['NotaMozo'];
+      $NotaMesa = $parametros['NotaMesa'];
+      $NotaCocinero = $parametros['NotaCocinero'];
+      $Descripcion = $parametros['Descripcion'];
+      $Pedido = $parametros['Pedido'];
+
+      if(Usuario::InsertarEncuesta($NotaRestaurante,$NotaMozo,$NotaMesa,$NotaCocinero,$Descripcion,$Pedido))
+      {
+        $payload = json_encode(array("mensaje" => "Se Completo Correctamente"));           
+
+        $response->getBody()->write($payload);
+          return $response
+            ->withHeader('Content-Type', 'application/json');
+
+      }
+      else{
+
+        $payload = json_encode(array("mensaje" => "No se pudo cargar"));           
+
+        $response->getBody()->write($payload);
+          return $response
+            ->withHeader('Content-Type', 'application/json');
+
+      }
+
+
+    }
 }

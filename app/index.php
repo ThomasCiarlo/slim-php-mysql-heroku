@@ -58,10 +58,15 @@ $app->group('/usuarios/tareas', function (RouteCollectorProxy $group){
     $group->post('[/]', \UsuarioController::class . ':TerminarTarea');
   });
 
+  $app->group('/encuesta', function (RouteCollectorProxy $group){  
+    $group->post('[/]', \UsuarioController::class . ':Encuesta');
+  });
+
 $app->group('/descargaArchivos', function (RouteCollectorProxy $group){  
-    $group->get('/a', \UsuarioController::class . ':DescargarUsuarios');
-    $group->get('/b', \ProductoController::class . ':DescargarProductos');
-    $group->get('/c', \ReporteProduccion::class . ':GenerarPdf');
+    $group->post('[/]', \UsuarioController::class . ':CargaUsuarios');
+    $group->get('/a/', \UsuarioController::class . ':DescargarUsuarios');
+    $group->get('/b/', \ProductoController::class . ':DescargarProductos');
+    $group->get('/c/', \ReporteProduccion::class . ':GenerarPdf');
   });
 
 $app->group('/administrador', function (RouteCollectorProxy $group){  

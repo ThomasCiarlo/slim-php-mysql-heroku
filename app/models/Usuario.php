@@ -71,4 +71,20 @@ class Usuario
 
         return $consulta->fetchObject('Usuario');
     }
+
+    public static function InsertarEncuesta($NotaRestaurante,$NotaMozo,$NotaMesa,$NotaCocinero,$Descripcion,$Pedido)
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta("INSERT INTO encuestas (NotaRestaurante, NotaMozo, NotaMesa, NotaCocinero, Descripcion, Pedido, Fecha) VALUES (:NotaRestaurante, :NotaMozo, :NotaMesa, :NotaCocinero, :Descripcion, :Pedido, :Fecha)");
+        $consulta->bindValue(':NotaRestaurante', $NotaRestaurante, PDO::PARAM_STR);
+        $consulta->bindValue(':NotaMozo', $NotaMozo, PDO::PARAM_STR);
+        $consulta->bindValue(':NotaMesa', $NotaMesa, PDO::PARAM_STR);
+        $consulta->bindValue(':NotaCocinero', $NotaCocinero, PDO::PARAM_STR);
+        $consulta->bindValue(':Descripcion', $Descripcion, PDO::PARAM_STR);
+        $consulta->bindValue(':Pedido', $Pedido, PDO::PARAM_STR);
+        $consulta->bindValue(':Fecha', date("Y-m-d"), PDO::PARAM_STR);
+        $consulta->execute();
+
+        return true;
+    }
 }

@@ -21,8 +21,6 @@ class Produccion
 
         foreach($listaDeProductos as $x)
         {
-            $prod = Produccion::BuscarEnProduccion($x,$pedido->id);
-            if($prod == null){
                 $producto = Producto::obtenerProductoID($x);
                 $user = null;
                 $tip = $producto->tipo;
@@ -43,12 +41,10 @@ class Produccion
                 }
                 
                 Produccion::InsertarEnProduccion($user->id,$user->usuario,$x,$pedido->id,"2");
-                Pedido::ActualizarEstado($pedido->id,2);                 
-                $NohayMas = false;                      
-            }
+                Pedido::ActualizarEstado($pedido->id,2);                                      
           }
         }
-
+        else{
         $pedidosAEntregar = Pedido::obtenerPedidoPorEstado("2");
         if($pedidosAEntregar != null){
             $userMozo = Produccion::BuscarEmpleadoSinAsignacion("4");
@@ -57,6 +53,7 @@ class Produccion
                 Pedido::ActualizarEstado($pedidosAEntregar->id,"3");
                 Mesa::modificarEstado($pedidosAEntregar->mesa,"2");
             }
+        }
         }
 
 
