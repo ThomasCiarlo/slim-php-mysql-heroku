@@ -25,7 +25,7 @@ require_once './Funciones/ReporteProduccion.php';
 // Instantiate App
 $app = AppFactory::create();
 //para debug
-$app->setBasePath('/slim-php-mysql-heroku/app');
+//$app->setBasePath('/slim-php-mysql-heroku/app');
 // Add error middleware
 $app->addErrorMiddleware(true, true, true);
 
@@ -45,6 +45,10 @@ $app->group('/admin', function (RouteCollectorProxy $group){
   $group->post('/mesa/D/[/]',\AdminController::class . ':MesaMenosFacturo');
   $group->post('/mesa/E/[/]',\AdminController::class . ':MesaConMayorImporte');
   $group->post('/mesa/F/[/]',\AdminController::class . ':MesaConMenorImporte');
+  $group->post('/pedido/A/',\AdminController::class . ':PedidosCancelados');
+  $group->post('/pedido/B/[/]',\AdminController::class . ':Facturacion');
+  $group->post('/pedido/C/',\AdminController::class . ':BuenaCritica');
+  $group->post('/pedido/D/',\AdminController::class . ':MalaCritica');
 })->add(\MWparaAutentificar::class . ':VerificarUsuario');
 
 $app->group('/usuarios', function (RouteCollectorProxy $group){  

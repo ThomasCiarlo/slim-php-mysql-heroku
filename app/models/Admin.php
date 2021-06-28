@@ -101,6 +101,43 @@ class Admin
         return $consulta->fetchAll(PDO::FETCH_NUM);
     }
 
+    public static function PedidosCancelado()
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, mesa, listaPedido,usuario,estado,codPedido,horaDeInicio, importe FROM pedidos where estado = 6");
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_CLASS, 'Pedido');
+    }
+
+    public static function FacturacionEntreFechas($fechaMas,$fechaMenos)
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT SUM(p.importe) imp FROM pedidos p WHERE p.fechaPedido > :fechaMenos and p.fechaPedido <= :fechaMas and estado != 6");
+        $consulta->bindValue(':fechaMas', $fechaMas, PDO::PARAM_STR);
+        $consulta->bindValue(':fechaMenos', $fechaMenos, PDO::PARAM_STR);
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_NUM);
+    }
+
+    public static function BuenPedido()
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta("select Pedido from encuestas where Descripcion LIKE '%Bueno%'");
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_NUM);
+    }
+
+    public static function MalPedido()
+    {
+        $objAccesoDatos = AccesoDatos::obtenerInstancia();
+        $consulta = $objAccesoDatos->prepararConsulta("select Pedido from encuestas where Descripcion LIKE '%Malo%'");
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_NUM);
+    }
 
 
 

@@ -130,5 +130,49 @@ class AdminController extends Admin
           ->withHeader('Content-Type', 'application/json');
     }
 
+    public function PedidosCancelados($request, $response, $args)
+    {
+        $oper = Admin::PedidosCancelado();
+        $payload = json_encode($oper);
+       
+        $response->getBody()->write("Pedidos: " .$payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function Facturacion($request, $response, $args)
+    {
+        $parametros = $request->getParsedBody();
+        $fechaMas = $parametros['fechaMas'];
+        $fechaMenos = $parametros['fechaMenos'];
+
+        $oper = Admin::FacturacionEntreFechas($fechaMas,$fechaMenos);
+        $payload = json_encode($oper[0][0]);
+       
+        $response->getBody()->write("Facturado: " .$payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function BuenaCritica($request, $response, $args)
+    {
+        $oper = Admin::BuenPedido();
+        $payload = json_encode($oper);
+       
+        $response->getBody()->write("Pedidos OK: " .$payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function MalaCritica($request, $response, $args)
+    {
+        $oper = Admin::MalPedido();
+        $payload = json_encode($oper);
+       
+        $response->getBody()->write("Pedidos MAL: " .$payload);
+        return $response
+          ->withHeader('Content-Type', 'application/json');
+    }
+
 
 }

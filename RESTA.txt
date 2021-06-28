@@ -1,13 +1,4 @@
 7- De los empleados:
 a- Los días y horarios que se Ingresaron al sistema.
 
-
-8- De las pedidos:
-
-d- Los cancelados.
-
-9- De las mesas:
-
-g- Lo que facturó entre dos fechas dadas.
-h- Mejores comentarios.
-i- Peores comentarios.
+Enero2020

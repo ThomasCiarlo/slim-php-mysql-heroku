@@ -109,7 +109,7 @@ class UsuarioController extends Usuario implements IApiUsable
 
 
       if($produccion != null){
-      Produccion::ActualizarEstado($produccion->id,$timpoRealizado,3);
+      Produccion::ActualizarEstado($produccion->id,$timpoRealizado,2);
       $array = (array("mensaje" => "Se termino con la tarea","ID" => "$produccion->id"));
       }
       else{

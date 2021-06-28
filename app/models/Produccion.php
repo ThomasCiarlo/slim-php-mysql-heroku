@@ -40,7 +40,7 @@ class Produccion
                     break;
                 }
                 
-                Produccion::InsertarEnProduccion($user->id,$user->usuario,$x,$pedido->id,"2");
+                Produccion::InsertarEnProduccion($user->id,$user->usuario,$x,$pedido->id,"1");
                 Pedido::ActualizarEstado($pedido->id,2);                                      
           }
         }
@@ -85,7 +85,7 @@ class Produccion
     public static function BuscarEmpleadoSinAsignacion($puesto)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, usuario, clave,puesto FROM usuarios WHERE estado = 'SIN ASIGNACION' and puesto = :puesto LIMIT 1");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id, usuario, clave,puesto FROM usuarios WHERE puesto = :puesto LIMIT 1");
         $consulta->bindValue(':puesto', $puesto);
         $consulta->execute();
 
@@ -116,7 +116,7 @@ class Produccion
     public static function BuscarPedidoPorUser($id)
     {
         $objAccesoDatos = AccesoDatos::obtenerInstancia();
-        $consulta = $objAccesoDatos->prepararConsulta("SELECT id,Idempleado, empleadoNombre,producto,idPedido,estado,fechaDeProduccion FROM produccion WHERE estado = '2' and Idempleado = :id");
+        $consulta = $objAccesoDatos->prepararConsulta("SELECT id,Idempleado, empleadoNombre,producto,idPedido,estado,fechaDeProduccion FROM produccion WHERE estado = '1' and Idempleado = :id");
         $consulta->bindValue(':id', $id);
         $consulta->execute();
 
